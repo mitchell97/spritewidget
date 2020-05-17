@@ -23,11 +23,14 @@ enum SpriteBoxTransformMode {
 
   /// Use the width of the root node to set the size of the coordinate system,
   /// and change the height of the root node to fit the box.
-  fixedWidth,
+  fixedWidthOpenBottom,
 
   /// Use the height of the root node to set the size of the coordinate system,
   /// and change the width of the root node to fit the box.
   fixedHeight,
+
+  
+  fixedWidthOpenTop,
 }
 
 /// A [RenderBox] that draws a sprite world represented by a [Node] tree.
@@ -314,11 +317,23 @@ class SpriteBox extends RenderBox {
           offsetX = (size.width - scaleX * systemWidth)/2.0;
         }
         break;
-      case SpriteBoxTransformMode.fixedWidth:
+      case SpriteBoxTransformMode.fixedWidthOpenBottom:
         scaleX = size.width/systemWidth;
         scaleY = scaleX;
         systemHeight = size.height/scaleX;
         rootNode.size = new Size(systemWidth, systemHeight);
+        break;
+      case SpriteBoxTransformMode.fixedWidthOpenTop:
+        scaleX = size.width/systemWidth;
+        scaleY = scaleX;
+        var oldHeight = systemHeight;
+        systemHeight = size.height/scaleX;
+        var offset = Offset(
+          rootNode.position.dx,
+          rootNode.position.dy - (oldHeight - systemHeight)
+        );
+        rootNode.size = new Size(systemWidth, systemHeight);
+        rootNode.position = offset;
         break;
       case SpriteBoxTransformMode.fixedHeight:
         scaleY = size.height/systemHeight;
