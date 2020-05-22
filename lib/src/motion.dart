@@ -54,9 +54,11 @@ typedef void SetterCallback(dynamic value);
 /// interval, optionally using an easing curve.
 abstract class MotionInterval extends Motion {
 
+  MotionCallback _onComplete;
+
   /// Creates a new [MotionInterval], typically you will want to pass in a
   /// [duration] to specify how long time the motion will take to complete.
-  MotionInterval([this._duration = 0.0, this.curve]);
+  MotionInterval([this._duration = 0.0, this.curve, this._onComplete]);
 
   @override
   double get duration => _duration;
@@ -91,7 +93,12 @@ abstract class MotionInterval extends Motion {
       update(curve.transform(t));
     }
 
-    if (t >= 1.0) _finished = true;
+    if (t >= 1.0) {
+      if (_onComplete != null) {
+        _onComplete();
+      }
+      _finished = true;
+    }
   }
 }
 
@@ -115,7 +122,8 @@ class MotionRepeat extends MotionInterval {
 
   @override
   void update(double t) {
-    int currentRepeat = math.min((t * numRepeats.toDouble()).toInt(), numRepeats - 1);
+    int currentRepeat = math.min(
+        (t * numRepeats.toDouble()).toInt(), numRepeats - 1);
     for (int i = math.max(_lastFinishedRepeat, 0); i < currentRepeat; i++) {
       if (!motion._finished) motion.update(1.0);
       motion._reset();
@@ -304,7 +312,7 @@ class MotionGroup extends MotionInterval {
             } else {
               motion.update(ta);
             }
-          } else if (!motion._finished){
+          } else if (!motion._finished) {
             motion.update(1.0);
             motion._finished = true;
           }
@@ -398,7 +406,9 @@ class MotionTween<T> extends MotionInterval {
   ///       bounceOut
   ///     );
   ///     myNode.motions.run(myTween);
-  MotionTween(this.setter, this.startVal, this.endVal, double duration, [Curve curve]) : super(duration, curve) {
+  MotionTween(this.setter, this.startVal, this.endVal, double duration,
+      [Curve curve, MotionCallback onComplete])
+      : super(duration, curve, onComplete) {
     _computeDelta();
   }
 
@@ -438,7 +448,8 @@ class MotionTween<T> extends MotionInterval {
       double tEnd = (endVal as Rect).top;
       double rEnd = (endVal as Rect).right;
       double bEnd = (endVal as Rect).bottom;
-      _delta = new Rect.fromLTRB(lEnd - lStart, tEnd - tStart, rEnd - rStart, bEnd - bStart);
+      _delta = new Rect.fromLTRB(
+          lEnd - lStart, tEnd - tStart, rEnd - rStart, bEnd - bStart);
     } else if (startVal is double) {
       // Double
       _delta = (endVal as double) - (startVal as double);
@@ -482,16 +493,22 @@ class MotionTween<T> extends MotionInterval {
       double tDelta = _delta.top;
       double rDelta = _delta.right;
       double bDelta = _delta.bottom;
-      newVal = new Rect.fromLTRB(lStart + lDelta * t, tStart + tDelta * t, rStart + rDelta * t, bStart + bDelta * t);
+      newVal = new Rect.fromLTRB(
+          lStart + lDelta * t, tStart + tDelta * t, rStart + rDelta * t,
+          bStart + bDelta * t);
     } else if (startVal is double) {
       // Doubles
       newVal = (startVal as double) + _delta * t;
     } else if (startVal is Color) {
       // Colors
-      int aNew = ((startVal as Color).alpha + (_delta.alpha * t).toInt()).clamp(0, 255);
-      int rNew = ((startVal as Color).red + (_delta.red * t).toInt()).clamp(0, 255);
-      int gNew = ((startVal as Color).green + (_delta.green * t).toInt()).clamp(0, 255);
-      int bNew = ((startVal as Color).blue + (_delta.blue * t).toInt()).clamp(0, 255);
+      int aNew = ((startVal as Color).alpha + (_delta.alpha * t).toInt()).clamp(
+          0, 255);
+      int rNew = ((startVal as Color).red + (_delta.red * t).toInt()).clamp(
+          0, 255);
+      int gNew = ((startVal as Color).green + (_delta.green * t).toInt()).clamp(
+          0, 255);
+      int bNew = ((startVal as Color).blue + (_delta.blue * t).toInt()).clamp(
+          0, 255);
       newVal = new Color.fromARGB(aNew, rNew, gNew, bNew);
     } else {
       // Oopses
