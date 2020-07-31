@@ -60,6 +60,8 @@ abstract class MotionInterval extends Motion {
   /// [duration] to specify how long time the motion will take to complete.
   MotionInterval([this._duration = 0.0, this.curve, this._onComplete]);
 
+  MotionInterval.withCallback(this._onComplete);
+
   @override
   double get duration => _duration;
   double _duration;
@@ -184,7 +186,8 @@ class MotionSequence extends MotionInterval {
   /// Creates a new motion with the list of motions passed in.
   ///
   ///     var mySequence = new MotionSequence([myMotion0, myMotion1, myMotion2]);
-  MotionSequence(List<Motion> motions) {
+  MotionSequence(List<Motion> motions, [_onComplete])
+      : super.withCallback(_onComplete) {
     assert(motions.length >= 2);
 
     if (motions.length == 2) {
