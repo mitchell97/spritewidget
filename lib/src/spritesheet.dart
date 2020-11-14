@@ -38,7 +38,7 @@ class SpriteSheet {
       Size sourceSize = _readJsonSize(frameInfo["sourceSize"]);
       Offset pivot = _readJsonPoint(frameInfo["pivot"]);
 
-      SpriteTexture texture = new SpriteTexture._fromSpriteFrame(_image, fileName, sourceSize, rotated, trimmed, frame,
+      SpriteTexture texture = new SpriteTexture.fromSpriteFrame(_image, fileName, sourceSize, rotated, trimmed, frame,
         spriteSourceSize, pivot);
       _textures[fileName] = texture;
     }

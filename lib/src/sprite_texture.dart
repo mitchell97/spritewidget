@@ -22,7 +22,7 @@ class SpriteTexture {
     pivot = new Offset(0.5, 0.5);
 
 
-  SpriteTexture._fromSpriteFrame(this.image, this.name, this.size, this.rotated, this.trimmed, this.frame,
+  SpriteTexture.fromSpriteFrame(this.image, this.name, this.size, this.rotated, this.trimmed, this.frame,
                            this.spriteSourceSize, this.pivot);
 
   /// The image that this texture is a part of.
@@ -75,7 +75,7 @@ class SpriteTexture {
     assert(!rotated);
     Rect srcFrame = new Rect.fromLTWH(rect.left + frame.left, rect.top + frame.top, rect.size.width, rect.size.height);
     Rect dstFrame = new Rect.fromLTWH(0.0, 0.0, rect.size.width, rect.size.height);
-    return new SpriteTexture._fromSpriteFrame(image, name, rect.size, false, false, srcFrame, dstFrame, new Offset(0.5, 0.5));
+    return new SpriteTexture.fromSpriteFrame(image, name, rect.size, false, false, srcFrame, dstFrame, new Offset(0.5, 0.5));
   }
 
   /// Draws the texture to a [Canvas] at a specified [position] and with the
